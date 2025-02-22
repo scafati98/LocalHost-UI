@@ -12,21 +12,38 @@ const VoiceWaveform = () => {
     if (!ctx) return;
 
     let animationId: number;
-    const bars = 50;
-    const barWidth = canvas.width / bars;
+    const points = 50;
+    let phase = 0;
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = '#9b87f5';
+      
+      // Create smooth sine wave
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height / 2);
 
-      for (let i = 0; i < bars; i++) {
-        const height = Math.random() * 50 + 10;
-        const x = i * (barWidth + 2);
-        const y = (canvas.height - height) / 2;
+      for (let x = 0; x < canvas.width; x++) {
+        const frequency = 0.02;
+        const amplitude = 25;
+        const y = canvas.height / 2 + 
+                 Math.sin(x * frequency + phase) * amplitude + 
+                 Math.sin(x * frequency * 0.5 + phase * 1.5) * (amplitude * 0.5);
         
-        ctx.fillRect(x, y, barWidth, height);
+        if (x === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
       }
 
+      ctx.lineTo(canvas.width, canvas.height);
+      ctx.lineTo(0, canvas.height);
+      ctx.closePath();
+      ctx.fill();
+
+      // Update phase for animation
+      phase += 0.02;
       animationId = requestAnimationFrame(animate);
     };
 
