@@ -1,5 +1,4 @@
-
-import { Calendar, MapPin, Star, Users, Mail, Wallet, Clock, Clock3, MapPinned, Utensils, Info } from 'lucide-react';
+import { Calendar, MapPin, Star, Users, Mail, Wallet, Clock, Clock3, MapPinned, Utensils, Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -18,11 +17,22 @@ interface EventDetails {
   priceRange?: string;
 }
 
+interface DaySchedule {
+  date: string;
+  events: EventDetails[];
+}
+
+interface WeekSchedule {
+  weekNumber: number;
+  days: DaySchedule[];
+}
+
 const TripSummary = () => {
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
   const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<EventDetails | null>(null);
+  const [expandedWeeks, setExpandedWeeks] = useState<number[]>([1]); // First week expanded by default
   const { toast } = useToast();
 
   const handleSendEmail = () => {
@@ -39,76 +49,138 @@ const TripSummary = () => {
     setIsEventDialogOpen(true);
   };
 
-  const agenda = [
+  const toggleWeek = (weekNumber: number) => {
+    setExpandedWeeks(prev => 
+      prev.includes(weekNumber)
+        ? prev.filter(w => w !== weekNumber)
+        : [...prev, weekNumber]
+    );
+  };
+
+  const weeks: WeekSchedule[] = [
     {
-      date: "Day 1 - Monday, April 15",
-      events: [
+      weekNumber: 1,
+      days: [
         {
-          time: "10:00 AM",
-          activity: "City Tour",
-          type: "activity" as const,
-          description: "Explore the city's historic landmarks and modern attractions with our expert local guide.",
-          location: "Meeting point: Hotel Lobby",
-          duration: "3 hours",
+          date: "Day 1 - Monday, April 15",
+          events: [
+            {
+              time: "10:00 AM",
+              activity: "City Tour",
+              type: "activity" as const,
+              description: "Explore the city's historic landmarks and modern attractions with our expert local guide.",
+              location: "Meeting point: Hotel Lobby",
+              duration: "3 hours",
+            },
+            {
+              time: "1:00 PM",
+              activity: "Lunch at Ocean View Restaurant",
+              type: "restaurant" as const,
+              description: "Enjoy fresh seafood and panoramic ocean views at this acclaimed restaurant.",
+              location: "123 Coastal Drive",
+              cuisine: "Seafood & Mediterranean",
+              rating: 4.7,
+              priceRange: "$$-$$$",
+            },
+            {
+              time: "4:00 PM",
+              activity: "Beach Walk",
+              type: "activity" as const,
+              description: "Guided beach walk along the pristine coastline with sunset viewing.",
+              location: "South Beach Boardwalk",
+              duration: "1.5 hours",
+            },
+            {
+              time: "7:00 PM",
+              activity: "Dinner at Sunset Grill",
+              type: "restaurant" as const,
+              description: "Classic steakhouse with an extensive wine list and outdoor seating.",
+              location: "456 Harbor Street",
+              cuisine: "Steakhouse & Grill",
+              rating: 4.8,
+              priceRange: "$$$",
+            }
+          ]
         },
         {
-          time: "1:00 PM",
-          activity: "Lunch at Ocean View Restaurant",
-          type: "restaurant" as const,
-          description: "Enjoy fresh seafood and panoramic ocean views at this acclaimed restaurant.",
-          location: "123 Coastal Drive",
-          cuisine: "Seafood & Mediterranean",
-          rating: 4.7,
-          priceRange: "$$-$$$",
+          date: "Day 2 - Tuesday, April 16",
+          events: [
+            {
+              time: "9:00 AM",
+              activity: "Local Food Festival",
+              type: "activity" as const,
+              description: "Experience local culinary traditions and cooking demonstrations.",
+              location: "City Center Plaza",
+              duration: "4 hours",
+            },
+            {
+              time: "2:00 PM",
+              activity: "Wine Tasting",
+              type: "activity" as const,
+              description: "Sample regional wines with a professional sommelier.",
+              location: "Coastal Vineyard",
+              duration: "2 hours",
+            },
+            {
+              time: "7:30 PM",
+              activity: "Seafood Dinner at Pearl",
+              type: "restaurant" as const,
+              description: "Fine dining restaurant specializing in local seafood dishes.",
+              location: "789 Marina Way",
+              cuisine: "Contemporary Seafood",
+              rating: 4.9,
+              priceRange: "$$$",
+            }
+          ]
         },
         {
-          time: "4:00 PM",
-          activity: "Beach Walk",
-          type: "activity" as const,
-          description: "Guided beach walk along the pristine coastline with sunset viewing.",
-          location: "South Beach Boardwalk",
-          duration: "1.5 hours",
-        },
-        {
-          time: "7:00 PM",
-          activity: "Dinner at Sunset Grill",
-          type: "restaurant" as const,
-          description: "Classic steakhouse with an extensive wine list and outdoor seating.",
-          location: "456 Harbor Street",
-          cuisine: "Steakhouse & Grill",
-          rating: 4.8,
-          priceRange: "$$$",
+          date: "Day 3 - Wednesday, April 17",
+          events: [
+            {
+              time: "9:30 AM",
+              activity: "Hiking Adventure",
+              type: "activity" as const,
+              description: "Scenic hiking trail with panoramic city views.",
+              location: "Twin Peaks",
+              duration: "4 hours",
+            },
+            {
+              time: "2:00 PM",
+              activity: "Art Gallery Tour",
+              type: "activity" as const,
+              description: "Guided tour of contemporary art galleries.",
+              location: "Downtown Art District",
+              duration: "3 hours",
+            }
+          ]
         }
       ]
     },
     {
-      date: "Day 2 - Tuesday, April 16",
-      events: [
+      weekNumber: 2,
+      days: [
         {
-          time: "9:00 AM",
-          activity: "Local Food Festival",
-          type: "activity" as const,
-          description: "Experience local culinary traditions and cooking demonstrations.",
-          location: "City Center Plaza",
-          duration: "4 hours",
-        },
-        {
-          time: "2:00 PM",
-          activity: "Wine Tasting",
-          type: "activity" as const,
-          description: "Sample regional wines with a professional sommelier.",
-          location: "Coastal Vineyard",
-          duration: "2 hours",
-        },
-        {
-          time: "7:30 PM",
-          activity: "Seafood Dinner at Pearl",
-          type: "restaurant" as const,
-          description: "Fine dining restaurant specializing in local seafood dishes.",
-          location: "789 Marina Way",
-          cuisine: "Contemporary Seafood",
-          rating: 4.9,
-          priceRange: "$$$",
+          date: "Day 8 - Monday, April 22",
+          events: [
+            {
+              time: "10:00 AM",
+              activity: "Golden Gate Bridge Walk",
+              type: "activity" as const,
+              description: "Guided walk across the iconic Golden Gate Bridge.",
+              location: "Golden Gate Bridge Welcome Center",
+              duration: "2 hours",
+            },
+            {
+              time: "1:00 PM",
+              activity: "Lunch at Fisherman's Wharf",
+              type: "restaurant" as const,
+              description: "Famous seafood restaurant with bay views.",
+              location: "Pier 39",
+              cuisine: "Seafood",
+              rating: 4.6,
+              priceRange: "$$",
+            }
+          ]
         }
       ]
     }
@@ -208,30 +280,50 @@ const TripSummary = () => {
             <div className="flex-1">
               <h3 className="font-medium">Daily Agenda</h3>
               <div className="mt-2 space-y-4">
-                {agenda.map((day, index) => (
-                  <div key={index} className="p-4 bg-white/50 rounded-lg">
-                    <h4 className="font-medium text-primary mb-3">{day.date}</h4>
-                    <div className="space-y-3">
-                      {day.events.map((event, eventIndex) => (
-                        <button
-                          key={eventIndex}
-                          onClick={() => handleEventClick(event)}
-                          className="w-full text-left hover:bg-white/50 rounded-lg p-2 transition-colors"
-                        >
-                          <div className="flex items-start gap-2">
-                            <div className="min-w-[80px] text-sm text-gray-600">
-                              {event.time}
+                {weeks.map((week) => (
+                  <div key={week.weekNumber} className="border border-gray-200 rounded-lg overflow-hidden">
+                    <button
+                      onClick={() => toggleWeek(week.weekNumber)}
+                      className="w-full flex items-center justify-between p-4 bg-white/50 hover:bg-white/70 transition-colors"
+                    >
+                      <h4 className="font-medium">Week {week.weekNumber}</h4>
+                      {expandedWeeks.includes(week.weekNumber) ? (
+                        <ChevronUp className="w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4" />
+                      )}
+                    </button>
+                    
+                    {expandedWeeks.includes(week.weekNumber) && (
+                      <div className="divide-y divide-gray-100">
+                        {week.days.map((day, dayIndex) => (
+                          <div key={dayIndex} className="p-4 bg-white/30">
+                            <h5 className="font-medium text-primary mb-3">{day.date}</h5>
+                            <div className="space-y-3">
+                              {day.events.map((event, eventIndex) => (
+                                <button
+                                  key={eventIndex}
+                                  onClick={() => handleEventClick(event)}
+                                  className="w-full text-left hover:bg-white/50 rounded-lg p-2 transition-colors"
+                                >
+                                  <div className="flex items-start gap-2">
+                                    <div className="min-w-[80px] text-sm text-gray-600">
+                                      {event.time}
+                                    </div>
+                                    <div className={`flex-1 text-sm ${
+                                      event.type === 'restaurant' ? 'text-primary' : ''
+                                    }`}>
+                                      {event.activity}
+                                    </div>
+                                    <Info className="w-4 h-4 text-gray-400" />
+                                  </div>
+                                </button>
+                              ))}
                             </div>
-                            <div className={`flex-1 text-sm ${
-                              event.type === 'restaurant' ? 'text-primary' : ''
-                            }`}>
-                              {event.activity}
-                            </div>
-                            <Info className="w-4 h-4 text-gray-400" />
                           </div>
-                        </button>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
