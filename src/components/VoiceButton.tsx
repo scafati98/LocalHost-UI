@@ -30,8 +30,9 @@ const VoiceButton = ({ onToggle }: VoiceButtonProps) => {
       {/* Outer attention rings */}
       {!isActive && showPulse && (
         <>
-          <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
-          <div className="absolute inset-0 rounded-full bg-primary/10 animate-pulse" />
+          <div className="absolute inset-0 rounded-full bg-violet-400/20 animate-ping" />
+          <div className="absolute inset-0 rounded-full bg-violet-300/20 animate-pulse" />
+          <div className="absolute inset-0 rounded-full bg-violet-200/10 animate-pulse delay-75" />
         </>
       )}
       
@@ -44,20 +45,11 @@ const VoiceButton = ({ onToggle }: VoiceButtonProps) => {
             : 'bg-white hover:bg-gray-50'
         }`}
       >
-        <div className="relative">
-          {/* Floating text indicator */}
-          {!isActive && (
-            <div className="absolute -top-16 left-1/2 -translate-x-1/2 whitespace-nowrap bg-black/80 text-white text-sm px-4 py-2 rounded-full animate-bounce">
-              Click to Start
-            </div>
-          )}
-          
-          {isActive ? (
-            <Mic className="w-12 h-12 text-white animate-pulse" strokeWidth={2.5} />
-          ) : (
-            <Mic className="w-12 h-12 text-primary" strokeWidth={2} />
-          )}
-        </div>
+        {isActive ? (
+          <Mic className="w-12 h-12 text-white animate-pulse" strokeWidth={2.5} />
+        ) : (
+          <Mic className="w-12 h-12 text-primary" strokeWidth={2} />
+        )}
       </button>
     </div>
   );
