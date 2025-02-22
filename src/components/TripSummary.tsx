@@ -1,3 +1,4 @@
+
 import { Calendar, MapPin, Star, Users, Mail, Wallet, Clock, Clock3, MapPinned, Utensils, Info } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -45,7 +46,7 @@ const TripSummary = () => {
         {
           time: "10:00 AM",
           activity: "City Tour",
-          type: "activity",
+          type: "activity" as const,
           description: "Explore the city's historic landmarks and modern attractions with our expert local guide.",
           location: "Meeting point: Hotel Lobby",
           duration: "3 hours",
@@ -53,7 +54,7 @@ const TripSummary = () => {
         {
           time: "1:00 PM",
           activity: "Lunch at Ocean View Restaurant",
-          type: "restaurant",
+          type: "restaurant" as const,
           description: "Enjoy fresh seafood and panoramic ocean views at this acclaimed restaurant.",
           location: "123 Coastal Drive",
           cuisine: "Seafood & Mediterranean",
@@ -63,7 +64,7 @@ const TripSummary = () => {
         {
           time: "4:00 PM",
           activity: "Beach Walk",
-          type: "activity",
+          type: "activity" as const,
           description: "Guided beach walk along the pristine coastline with sunset viewing.",
           location: "South Beach Boardwalk",
           duration: "1.5 hours",
@@ -71,7 +72,7 @@ const TripSummary = () => {
         {
           time: "7:00 PM",
           activity: "Dinner at Sunset Grill",
-          type: "restaurant",
+          type: "restaurant" as const,
           description: "Classic steakhouse with an extensive wine list and outdoor seating.",
           location: "456 Harbor Street",
           cuisine: "Steakhouse & Grill",
@@ -86,7 +87,7 @@ const TripSummary = () => {
         {
           time: "9:00 AM",
           activity: "Local Food Festival",
-          type: "activity",
+          type: "activity" as const,
           description: "Experience local culinary traditions and cooking demonstrations.",
           location: "City Center Plaza",
           duration: "4 hours",
@@ -94,7 +95,7 @@ const TripSummary = () => {
         {
           time: "2:00 PM",
           activity: "Wine Tasting",
-          type: "activity",
+          type: "activity" as const,
           description: "Sample regional wines with a professional sommelier.",
           location: "Coastal Vineyard",
           duration: "2 hours",
@@ -102,7 +103,7 @@ const TripSummary = () => {
         {
           time: "7:30 PM",
           activity: "Seafood Dinner at Pearl",
-          type: "restaurant",
+          type: "restaurant" as const,
           description: "Fine dining restaurant specializing in local seafood dishes.",
           location: "789 Marina Way",
           cuisine: "Contemporary Seafood",
@@ -132,6 +133,30 @@ const TripSummary = () => {
         </div>
 
         <div className="space-y-6">
+          {/* Destination City */}
+          <div className="flex items-start gap-3">
+            <MapPin className="w-5 h-5 text-primary mt-1" />
+            <div className="flex-1">
+              <h3 className="font-medium">Destination</h3>
+              <div className="mt-2">
+                <div className="p-3 bg-white/50 rounded-lg">
+                  <div className="space-y-3">
+                    <span className="font-medium text-lg">San Francisco, California</span>
+                    <div className="relative h-48 w-full overflow-hidden rounded-lg">
+                      <img 
+                        src="https://images.unsplash.com/photo-1501594907352-04cda38ebc29"
+                        alt="San Francisco aerial view"
+                        className="object-cover w-full h-full"
+                      />
+                      <div className="absolute inset-0 bg-black/10"></div>
+                    </div>
+                    <p className="text-sm text-gray-600">Experience the iconic Golden Gate Bridge, vibrant neighborhoods, and stunning bay views.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Place to Stay */}
           <div className="flex items-start gap-3">
             <MapPin className="w-5 h-5 text-primary mt-1" />
