@@ -1,5 +1,5 @@
 
-import { Message } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 
 interface ChatMessage {
   id: number;
@@ -15,7 +15,7 @@ const ChatInterface = ({ messages }: ChatInterfaceProps) => {
   return (
     <div className="flex flex-col h-full glass-card rounded-2xl p-4">
       <div className="flex items-center gap-2 mb-4 p-2">
-        <Message className="w-5 h-5 text-primary" />
+        <MessageSquare className="w-5 h-5 text-primary" />
         <h2 className="text-lg font-semibold">Chat with Local Host</h2>
       </div>
       
