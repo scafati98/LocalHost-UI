@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import VoiceButton from '../components/VoiceButton';
 import TripSummary from '../components/TripSummary';
+import LiveIndicator from '../components/LiveIndicator';
+import VoiceWaveform from '../components/VoiceWaveform';
 
 const Index = () => {
   const [isConversationStarted, setIsConversationStarted] = useState(false);
@@ -21,6 +23,17 @@ const Index = () => {
             Press the button and start speaking to get personalized travel recommendations
           </p>
           <VoiceButton onToggle={handleVoiceToggle} />
+          
+          {isConversationStarted && (
+            <div className="mt-8 space-y-6 w-full max-w-md">
+              <div className="flex justify-center">
+                <LiveIndicator />
+              </div>
+              <div className="flex justify-center">
+                <VoiceWaveform />
+              </div>
+            </div>
+          )}
         </div>
         
         {isConversationStarted && (
