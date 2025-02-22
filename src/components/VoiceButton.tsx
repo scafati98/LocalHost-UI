@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Mic } from 'lucide-react';
 
 interface VoiceButtonProps {
@@ -17,7 +17,7 @@ const VoiceButton = ({ onToggle }: VoiceButtonProps) => {
 
   return (
     <div className="relative">
-      {/* Continuous smooth ring animation */}
+      {/* Subtle circular pulse animation */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 rounded-full mic-ring" />
         <div className="absolute inset-0 rounded-full mic-ring animation-delay-1000" />
@@ -32,11 +32,7 @@ const VoiceButton = ({ onToggle }: VoiceButtonProps) => {
             : 'bg-white hover:bg-gray-50'
         }`}
       >
-        {isActive ? (
-          <Mic className="w-12 h-12 text-white" strokeWidth={2.5} />
-        ) : (
-          <Mic className="w-12 h-12 text-primary" strokeWidth={2} />
-        )}
+        <Mic className={`w-12 h-12 ${isActive ? 'text-white' : 'text-primary'}`} strokeWidth={isActive ? 2.5 : 2} />
       </button>
     </div>
   );
