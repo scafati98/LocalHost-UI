@@ -6,7 +6,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { GlobeIcon } from "lucide-react"
 
 export type Voice = {
   id: string;
@@ -24,6 +23,12 @@ const voices: Voice[] = [
   { id: "ThT5KcBeYPX3keUQqHPh", name: "Sofia", country: "Argentina", gender: "female" },
 ];
 
+const countryFlags: Record<string, string> = {
+  USA: "🇺🇸",
+  British: "🇬🇧",
+  Argentina: "🇦🇷"
+};
+
 interface VoiceSelectorProps {
   onVoiceChange: (voice: Voice) => void;
 }
@@ -34,16 +39,20 @@ export function VoiceSelector({ onVoiceChange }: VoiceSelectorProps) {
       const selectedVoice = voices.find(v => v.id === voiceId);
       if (selectedVoice) onVoiceChange(selectedVoice);
     }}>
-      <SelectTrigger className="w-[220px] bg-white/90 backdrop-blur-sm">
+      <SelectTrigger className="w-[220px] bg-white">
         <SelectValue placeholder="Select a voice" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="bg-white border shadow-lg" side="bottom">
         {voices.map((voice) => (
-          <SelectItem key={voice.id} value={voice.id}>
+          <SelectItem 
+            key={voice.id} 
+            value={voice.id}
+            className="hover:bg-gray-100"
+          >
             <div className="flex items-center gap-2">
-              <GlobeIcon className="h-4 w-4 text-primary" />
+              <span className="text-lg">{countryFlags[voice.country]}</span>
               <span>
-                {voice.name} ({voice.country} - {voice.gender})
+                {voice.name} ({voice.gender})
               </span>
             </div>
           </SelectItem>
