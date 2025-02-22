@@ -26,6 +26,17 @@ const Index = () => {
     }
   };
 
+  const handleStartOver = () => {
+    setIsConversationStarted(false);
+    setMessages([
+      {
+        id: 1,
+        text: "Hello! I'm Local Host, your personal travel assistant. How can I help you plan your perfect trip?",
+        sender: 'agent' as const,
+      },
+    ]);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
       <div className="max-w-7xl mx-auto">
@@ -41,7 +52,7 @@ const Index = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-fade-in">
-            <ChatInterface messages={messages} />
+            <ChatInterface messages={messages} onStartOver={handleStartOver} />
             <TripSummary />
           </div>
         )}
