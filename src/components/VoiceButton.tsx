@@ -18,14 +18,16 @@ const VoiceButton = ({ onToggle }: VoiceButtonProps) => {
   return (
     <button
       onClick={handleToggle}
-      className={`relative p-6 rounded-full transition-all duration-300 ${
-        isActive ? 'bg-primary voice-button-waves' : 'bg-gray-200 hover:bg-gray-300'
+      className={`relative p-8 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 ${
+        isActive 
+          ? 'bg-primary voice-button-waves ring-4 ring-primary/30' 
+          : 'bg-white hover:bg-gray-50'
       }`}
     >
       {isActive ? (
-        <Mic className="w-8 h-8 text-white" />
+        <Mic className="w-12 h-12 text-white animate-pulse" strokeWidth={2.5} />
       ) : (
-        <MicOff className="w-8 h-8 text-gray-600" />
+        <Mic className="w-12 h-12 text-primary" strokeWidth={2} />
       )}
     </button>
   );
