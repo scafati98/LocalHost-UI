@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Mic, MicOff } from 'lucide-react';
+import { Mic } from 'lucide-react';
 
 interface VoiceButtonProps {
   onToggle: (isActive: boolean) => void;
@@ -8,16 +8,6 @@ interface VoiceButtonProps {
 
 const VoiceButton = ({ onToggle }: VoiceButtonProps) => {
   const [isActive, setIsActive] = useState(false);
-  const [showPulse, setShowPulse] = useState(true);
-
-  useEffect(() => {
-    // Toggle the attention pulse animation every 3 seconds
-    const interval = setInterval(() => {
-      setShowPulse(prev => !prev);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const handleToggle = () => {
     const newState = !isActive;
@@ -27,10 +17,11 @@ const VoiceButton = ({ onToggle }: VoiceButtonProps) => {
 
   return (
     <div className="relative">
-      {/* Softer pulse animation when inactive */}
-      {!isActive && showPulse && (
-        <div className="absolute inset-0 rounded-full bg-primary/5 animate-pulse-slow" />
-      )}
+      {/* Continuous smooth ring animation */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 rounded-full mic-ring" />
+        <div className="absolute inset-0 rounded-full mic-ring animation-delay-1000" />
+      </div>
       
       {/* Main button */}
       <button
