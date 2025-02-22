@@ -12,38 +12,46 @@ const VoiceWaveform = () => {
     if (!ctx) return;
 
     let animationId: number;
-    const points = 50;
+    const points = 100;
     let phase = 0;
+    const amplitudes = new Array(points).fill(0);
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = '#9b87f5';
       
-      // Create smooth sine wave
-      ctx.beginPath();
-      ctx.moveTo(0, canvas.height / 2);
+      // Update amplitudes with smooth transitions
+      amplitudes.forEach((amp, i) => {
+        const targetAmp = Math.random() * 30 + 10; // Random target amplitude
+        amplitudes[i] = amp + (targetAmp - amp) * 0.1; // Smooth transition
+      });
 
-      for (let x = 0; x < canvas.width; x++) {
-        const frequency = 0.02;
-        const amplitude = 25;
-        const y = canvas.height / 2 + 
-                 Math.sin(x * frequency + phase) * amplitude + 
-                 Math.sin(x * frequency * 0.5 + phase * 1.5) * (amplitude * 0.5);
+      // Create dynamic wave path
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height);
+
+      // Draw first half of the wave
+      for (let i = 0; i < points; i++) {
+        const x = (i / points) * canvas.width;
+        const y = canvas.height - amplitudes[i];
         
-        if (x === 0) {
+        if (i === 0) {
           ctx.moveTo(x, y);
         } else {
-          ctx.lineTo(x, y);
+          // Use quadratic curves for smoother lines
+          const xc = (x + (((i - 1) / points) * canvas.width)) / 2;
+          const yc = (y + (canvas.height - amplitudes[i - 1])) / 2;
+          ctx.quadraticCurveTo(xc, yc, x, y);
         }
       }
 
+      // Complete the wave shape
       ctx.lineTo(canvas.width, canvas.height);
-      ctx.lineTo(0, canvas.height);
       ctx.closePath();
       ctx.fill();
 
-      // Update phase for animation
-      phase += 0.02;
+      // Update phase for continuous animation
+      phase += 0.05;
       animationId = requestAnimationFrame(animate);
     };
 
