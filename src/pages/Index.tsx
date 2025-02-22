@@ -1,6 +1,7 @@
 
 import { useNavigate } from 'react-router-dom';
 import VoiceButton from '../components/VoiceButton';
+import { VoiceSelector, type Voice } from '../components/VoiceSelector';
 import { Plane, MapPin, CalendarCheck } from 'lucide-react';
 
 const Index = () => {
@@ -10,6 +11,11 @@ const Index = () => {
     if (isActive) {
       navigate('/conversation');
     }
+  };
+
+  const handleVoiceChange = (voice: Voice) => {
+    // Store the selected voice in localStorage for use in the conversation
+    localStorage.setItem('selectedVoice', JSON.stringify(voice));
   };
 
   return (
@@ -60,12 +66,15 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Voice button section */}
+            {/* Voice controls section */}
             <div className="space-y-6">
               <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                Press the microphone and start speaking to create your perfect travel itinerary
+                Choose your preferred assistant voice and press the microphone to start planning
               </p>
-              <VoiceButton onToggle={handleVoiceToggle} />
+              <div className="flex items-center justify-center gap-4 flex-wrap">
+                <VoiceSelector onVoiceChange={handleVoiceChange} />
+                <VoiceButton onToggle={handleVoiceToggle} />
+              </div>
               <p className="text-sm text-gray-500 mt-4">
                 Tap to start planning your next adventure
               </p>
