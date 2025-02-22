@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useEffect } from "react";
 
 export type Voice = {
   id: string;
@@ -23,6 +24,9 @@ const voices: Voice[] = [
   { id: "ThT5KcBeYPX3keUQqHPh", name: "Sofia", country: "Argentina", gender: "female" },
 ];
 
+// Set default voice to Rachel (USA)
+const DEFAULT_VOICE = voices[0];
+
 const countryFlags: Record<string, string> = {
   USA: "🇺🇸",
   British: "🇬🇧",
@@ -34,11 +38,23 @@ interface VoiceSelectorProps {
 }
 
 export function VoiceSelector({ onVoiceChange }: VoiceSelectorProps) {
+  // Set default voice when component mounts
+  useEffect(() => {
+    const savedVoice = localStorage.getItem('selectedVoice');
+    if (!savedVoice) {
+      onVoiceChange(DEFAULT_VOICE);
+      localStorage.setItem('selectedVoice', JSON.stringify(DEFAULT_VOICE));
+    }
+  }, [onVoiceChange]);
+
   return (
-    <Select onValueChange={(voiceId) => {
-      const selectedVoice = voices.find(v => v.id === voiceId);
-      if (selectedVoice) onVoiceChange(selectedVoice);
-    }}>
+    <Select 
+      defaultValue={DEFAULT_VOICE.id}
+      onValueChange={(voiceId) => {
+        const selectedVoice = voices.find(v => v.id === voiceId);
+        if (selectedVoice) onVoiceChange(selectedVoice);
+      }}
+    >
       <SelectTrigger className="w-[220px] bg-white">
         <SelectValue placeholder="Select a voice" />
       </SelectTrigger>
