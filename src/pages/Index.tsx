@@ -12,6 +12,10 @@ const Index = () => {
     setIsConversationStarted(isActive);
   };
 
+  const handleHangUp = () => {
+    setIsConversationStarted(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8 relative overflow-hidden">
       <div className="max-w-7xl mx-auto relative z-10">
@@ -27,7 +31,7 @@ const Index = () => {
           {isConversationStarted && (
             <div className="mt-8 space-y-6 w-full max-w-md">
               <div className="flex justify-center">
-                <LiveIndicator />
+                <LiveIndicator onHangUp={handleHangUp} />
               </div>
               <div className="flex justify-center">
                 <VoiceWaveform />
