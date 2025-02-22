@@ -20,29 +20,43 @@ const VoiceWaveform = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.fillStyle = '#9b87f5';
       
-      // Update amplitudes with smooth transitions
+      // Update amplitudes with smoother transitions
       amplitudes.forEach((amp, i) => {
-        const targetAmp = Math.random() * 30 + 10; // Random target amplitude
-        amplitudes[i] = amp + (targetAmp - amp) * 0.1; // Smooth transition
+        // Use sine wave as base for smoother movement
+        const baseAmp = Math.sin(i * 0.1 + phase) * 10;
+        const randomFactor = Math.random() * 10; // Reduced random factor
+        const targetAmp = 20 + baseAmp + randomFactor; // More consistent baseline
+        
+        // Slower transition for smoother movement
+        amplitudes[i] = amp + (targetAmp - amp) * 0.05;
       });
 
       // Create dynamic wave path
       ctx.beginPath();
       ctx.moveTo(0, canvas.height);
 
-      // Draw first half of the wave
-      for (let i = 0; i < points; i++) {
-        const x = (i / points) * canvas.width;
-        const y = canvas.height - amplitudes[i];
+      // Draw wave with enhanced smoothing
+      const points = amplitudes.length;
+      const step = canvas.width / (points - 1);
+
+      // Use bezier curves for smoother lines
+      for (let i = 0; i < points - 1; i++) {
+        const x0 = i * step;
+        const x1 = (i + 1) * step;
+        const y0 = canvas.height - amplitudes[i];
+        const y1 = canvas.height - amplitudes[i + 1];
+        
+        // Calculate control points for bezier curve
+        const cp1x = x0 + (x1 - x0) / 3;
+        const cp2x = x0 + (x1 - x0) * 2 / 3;
+        const cp1y = y0;
+        const cp2y = y1;
         
         if (i === 0) {
-          ctx.moveTo(x, y);
-        } else {
-          // Use quadratic curves for smoother lines
-          const xc = (x + (((i - 1) / points) * canvas.width)) / 2;
-          const yc = (y + (canvas.height - amplitudes[i - 1])) / 2;
-          ctx.quadraticCurveTo(xc, yc, x, y);
+          ctx.moveTo(x0, y0);
         }
+        // Use bezier curve instead of quadratic curve
+        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x1, y1);
       }
 
       // Complete the wave shape
@@ -50,8 +64,8 @@ const VoiceWaveform = () => {
       ctx.closePath();
       ctx.fill();
 
-      // Update phase for continuous animation
-      phase += 0.05;
+      // Slower phase update for smoother animation
+      phase += 0.02;
       animationId = requestAnimationFrame(animate);
     };
 
