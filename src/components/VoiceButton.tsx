@@ -27,26 +27,22 @@ const VoiceButton = ({ onToggle }: VoiceButtonProps) => {
 
   return (
     <div className="relative">
-      {/* Outer attention rings */}
+      {/* Softer pulse animation when inactive */}
       {!isActive && showPulse && (
-        <>
-          <div className="absolute inset-0 rounded-full bg-violet-400/20 animate-ping" />
-          <div className="absolute inset-0 rounded-full bg-violet-300/20 animate-pulse" />
-          <div className="absolute inset-0 rounded-full bg-violet-200/10 animate-pulse delay-75" />
-        </>
+        <div className="absolute inset-0 rounded-full bg-primary/5 animate-pulse-slow" />
       )}
       
       {/* Main button */}
       <button
         onClick={handleToggle}
-        className={`relative p-8 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 ${
+        className={`relative p-8 rounded-full transition-all duration-500 shadow-lg hover:shadow-xl transform hover:scale-105 ${
           isActive 
-            ? 'bg-primary voice-button-waves ring-4 ring-primary/30' 
+            ? 'bg-primary mic-glow' 
             : 'bg-white hover:bg-gray-50'
         }`}
       >
         {isActive ? (
-          <Mic className="w-12 h-12 text-white animate-pulse" strokeWidth={2.5} />
+          <Mic className="w-12 h-12 text-white" strokeWidth={2.5} />
         ) : (
           <Mic className="w-12 h-12 text-primary" strokeWidth={2} />
         )}
