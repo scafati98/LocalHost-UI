@@ -1,9 +1,10 @@
-import { Calendar, MapPin, Star, Users, Mail, Wallet, Clock, Clock3, MapPinned, Utensils, Info, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar, MapPin, Star, Users, Mail, Wallet, Clock, Clock3, MapPinned, Utensils, Info, ChevronDown, ChevronUp, Euro, Coffee, Hotel, Camera, Share2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface EventDetails {
   time: string;
@@ -27,13 +28,36 @@ interface WeekSchedule {
   days: DaySchedule[];
 }
 
-const TripSummary = () => {
+interface TripDetail {
+  type: 'destination' | 'accommodation' | 'activity' | 'restaurant' | 'budget' | 'duration';
+  content: any;
+  timestamp: number;
+}
+
+interface Recommendation {
+  type: 'place' | 'restaurant' | 'hotel' | 'activity';
+  title: string;
+  description: string;
+  icon: JSX.Element;
+  tags: string[];
+  time?: string;
+  price?: string;
+}
+
+interface TripSummaryProps {
+  messages: any[]; // Your chat message type
+}
+
+const TripSummary = ({ messages }: TripSummaryProps) => {
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
   const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
   const [email, setEmail] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<EventDetails | null>(null);
   const [expandedWeeks, setExpandedWeeks] = useState<number[]>([1]); // First week expanded by default
   const { toast } = useToast();
+  const [details, setDetails] = useState<TripDetail[]>([]);
+  const [expandedSections, setExpandedSections] = useState<string[]>(['destination']);
+  const [expandedCard, setExpandedCard] = useState<string | null>(null);
 
   const handleSendEmail = () => {
     toast({
@@ -57,362 +81,49 @@ const TripSummary = () => {
     );
   };
 
-  const weeks: WeekSchedule[] = [
-    {
-      weekNumber: 1,
-      days: [
-        {
-          date: "Day 1 - Monday, April 15",
-          events: [
-            {
-              time: "10:00 AM",
-              activity: "City Tour",
-              type: "activity" as const,
-              description: "Explore the city's historic landmarks and modern attractions with our expert local guide.",
-              location: "Meeting point: Hotel Lobby",
-              duration: "3 hours",
-            },
-            {
-              time: "1:00 PM",
-              activity: "Lunch at Ocean View Restaurant",
-              type: "restaurant" as const,
-              description: "Enjoy fresh seafood and panoramic ocean views at this acclaimed restaurant.",
-              location: "123 Coastal Drive",
-              cuisine: "Seafood & Mediterranean",
-              rating: 4.7,
-              priceRange: "$$-$$$",
-            },
-            {
-              time: "4:00 PM",
-              activity: "Beach Walk",
-              type: "activity" as const,
-              description: "Guided beach walk along the pristine coastline with sunset viewing.",
-              location: "South Beach Boardwalk",
-              duration: "1.5 hours",
-            },
-            {
-              time: "7:00 PM",
-              activity: "Dinner at Sunset Grill",
-              type: "restaurant" as const,
-              description: "Classic steakhouse with an extensive wine list and outdoor seating.",
-              location: "456 Harbor Street",
-              cuisine: "Steakhouse & Grill",
-              rating: 4.8,
-              priceRange: "$$$",
-            }
-          ]
-        },
-        {
-          date: "Day 2 - Tuesday, April 16",
-          events: [
-            {
-              time: "9:00 AM",
-              activity: "Local Food Festival",
-              type: "activity" as const,
-              description: "Experience local culinary traditions and cooking demonstrations.",
-              location: "City Center Plaza",
-              duration: "4 hours",
-            },
-            {
-              time: "2:00 PM",
-              activity: "Wine Tasting",
-              type: "activity" as const,
-              description: "Sample regional wines with a professional sommelier.",
-              location: "Coastal Vineyard",
-              duration: "2 hours",
-            },
-            {
-              time: "7:30 PM",
-              activity: "Seafood Dinner at Pearl",
-              type: "restaurant" as const,
-              description: "Fine dining restaurant specializing in local seafood dishes.",
-              location: "789 Marina Way",
-              cuisine: "Contemporary Seafood",
-              rating: 4.9,
-              priceRange: "$$$",
-            }
-          ]
-        },
-        {
-          date: "Day 3 - Wednesday, April 17",
-          events: [
-            {
-              time: "9:30 AM",
-              activity: "Hiking Adventure",
-              type: "activity" as const,
-              description: "Scenic hiking trail with panoramic city views.",
-              location: "Twin Peaks",
-              duration: "4 hours",
-            },
-            {
-              time: "2:00 PM",
-              activity: "Art Gallery Tour",
-              type: "activity" as const,
-              description: "Guided tour of contemporary art galleries.",
-              location: "Downtown Art District",
-              duration: "3 hours",
-            }
-          ]
-        }
-      ]
-    },
-    {
-      weekNumber: 2,
-      days: [
-        {
-          date: "Day 8 - Monday, April 22",
-          events: [
-            {
-              time: "10:00 AM",
-              activity: "Golden Gate Bridge Walk",
-              type: "activity" as const,
-              description: "Guided walk across the iconic Golden Gate Bridge.",
-              location: "Golden Gate Bridge Welcome Center",
-              duration: "2 hours",
-            },
-            {
-              time: "1:00 PM",
-              activity: "Lunch at Fisherman's Wharf",
-              type: "restaurant" as const,
-              description: "Famous seafood restaurant with bay views.",
-              location: "Pier 39",
-              cuisine: "Seafood",
-              rating: 4.6,
-              priceRange: "$$",
-            }
-          ]
-        }
-      ]
-    }
-  ];
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => 
+      prev.includes(section) 
+        ? prev.filter(s => s !== section)
+        : [...prev, section]
+    );
+  };
+
+  // Extract trip details from messages
+  useEffect(() => {
+    const extractedDetails: TripDetail[] = [];
+    
+    messages.forEach(message => {
+      // Add logic to extract details from messages
+      // This is where you'd parse the AI responses and categorize information
+    });
+
+    setDetails(extractedDetails);
+  }, [messages]);
 
   return (
-    <>
-      <div className="glass-card rounded-2xl p-6 space-y-6 animate-fade-in-slow">
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold">Trip Summary</h2>
-            <Button
-              onClick={() => setIsEmailDialogOpen(true)}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <Mail className="w-4 h-4" />
-              Send to Email
-            </Button>
-          </div>
-          <p className="text-sm text-gray-600">Based on your conversation</p>
-        </div>
-
-        <div className="space-y-6">
-          {/* Destination City */}
-          <div className="flex items-start gap-3">
-            <MapPin className="w-5 h-5 text-primary mt-1" />
-            <div className="flex-1">
-              <h3 className="font-medium">Destination</h3>
-              <div className="mt-2">
-                <div className="p-3 bg-white/50 rounded-lg">
-                  <div className="space-y-3">
-                    <span className="font-medium text-lg">San Francisco, California</span>
-                    <div className="relative h-48 w-full overflow-hidden rounded-lg">
-                      <img 
-                        src="https://images.unsplash.com/photo-1501594907352-04cda38ebc29"
-                        alt="San Francisco aerial view"
-                        className="object-cover w-full h-full"
-                      />
-                      <div className="absolute inset-0 bg-black/10"></div>
-                    </div>
-                    <p className="text-sm text-gray-600">Experience the iconic Golden Gate Bridge, vibrant neighborhoods, and stunning bay views.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Place to Stay */}
-          <div className="flex items-start gap-3">
-            <MapPin className="w-5 h-5 text-primary mt-1" />
-            <div className="flex-1">
-              <h3 className="font-medium">Accommodation</h3>
-              <div className="mt-2">
-                <div className="p-3 bg-white/50 rounded-lg">
-                  <div className="flex justify-between">
-                    <span className="font-medium">Luxury Ocean Resort</span>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                      <span className="text-sm">4.8</span>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-600 mt-1">Beachfront, Ocean View Suite</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Budget and Duration */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-start gap-3">
-              <Wallet className="w-5 h-5 text-primary mt-1" />
-              <div>
-                <h3 className="font-medium">Estimated Budget</h3>
-                <div className="mt-2 p-3 bg-white/50 rounded-lg">
-                  <span className="text-2xl font-semibold">$2,500</span>
-                  <p className="text-sm text-gray-600 mt-1">All inclusive</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <Clock className="w-5 h-5 text-primary mt-1" />
-              <div>
-                <h3 className="font-medium">Duration</h3>
-                <div className="mt-2 p-3 bg-white/50 rounded-lg">
-                  <span className="text-2xl font-semibold">2 Days</span>
-                  <p className="text-sm text-gray-600 mt-1">April 15 - 16</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Daily Agenda */}
-          <div className="flex items-start gap-3">
-            <Calendar className="w-5 h-5 text-primary mt-1" />
-            <div className="flex-1">
-              <h3 className="font-medium">Daily Agenda</h3>
-              <div className="mt-2 space-y-4">
-                {weeks.map((week) => (
-                  <div key={week.weekNumber} className="border border-gray-200 rounded-lg overflow-hidden">
-                    <button
-                      onClick={() => toggleWeek(week.weekNumber)}
-                      className="w-full flex items-center justify-between p-4 bg-white/50 hover:bg-white/70 transition-colors"
-                    >
-                      <h4 className="font-medium">Week {week.weekNumber}</h4>
-                      {expandedWeeks.includes(week.weekNumber) ? (
-                        <ChevronUp className="w-4 h-4" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4" />
-                      )}
-                    </button>
-                    
-                    {expandedWeeks.includes(week.weekNumber) && (
-                      <div className="divide-y divide-gray-100">
-                        {week.days.map((day, dayIndex) => (
-                          <div key={dayIndex} className="p-4 bg-white/30">
-                            <h5 className="font-medium text-primary mb-3">{day.date}</h5>
-                            <div className="space-y-3">
-                              {day.events.map((event, eventIndex) => (
-                                <button
-                                  key={eventIndex}
-                                  onClick={() => handleEventClick(event)}
-                                  className="w-full text-left hover:bg-white/50 rounded-lg p-2 transition-colors"
-                                >
-                                  <div className="flex items-start gap-2">
-                                    <div className="min-w-[80px] text-sm text-gray-600">
-                                      {event.time}
-                                    </div>
-                                    <div className={`flex-1 text-sm ${
-                                      event.type === 'restaurant' ? 'text-primary' : ''
-                                    }`}>
-                                      {event.activity}
-                                    </div>
-                                    <Info className="w-4 h-4 text-gray-400" />
-                                  </div>
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-medium text-gray-800">Trip Insights</h2>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="p-2 rounded-xl hover:bg-gray-50 text-gray-500"
+        >
+          <Share2 className="w-5 h-5" />
+        </motion.button>
       </div>
 
-      {/* Email Dialog */}
-      <Dialog open={isEmailDialogOpen} onOpenChange={setIsEmailDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Send Trip Summary</DialogTitle>
-            <DialogDescription>
-              Enter your email address to receive your trip summary.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 pt-4">
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <div className="flex justify-end">
-              <Button onClick={handleSendEmail}>Send Summary</Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
-      {/* Event Details Dialog */}
-      <Dialog open={isEventDialogOpen} onOpenChange={setIsEventDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{selectedEvent?.activity}</DialogTitle>
-            <DialogDescription>
-              {selectedEvent?.time}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 pt-4">
-            <div className="space-y-3">
-              {selectedEvent?.description && (
-                <p className="text-sm text-gray-600">{selectedEvent.description}</p>
-              )}
-              
-              {selectedEvent?.location && (
-                <div className="flex items-center gap-2">
-                  <MapPinned className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm">{selectedEvent.location}</span>
-                </div>
-              )}
-              
-              {selectedEvent?.duration && (
-                <div className="flex items-center gap-2">
-                  <Clock3 className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm">Duration: {selectedEvent.duration}</span>
-                </div>
-              )}
-
-              {selectedEvent?.type === 'restaurant' && (
-                <>
-                  {selectedEvent.cuisine && (
-                    <div className="flex items-center gap-2">
-                      <Utensils className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm">{selectedEvent.cuisine}</span>
-                    </div>
-                  )}
-                  
-                  {selectedEvent.rating && (
-                    <div className="flex items-center gap-2">
-                      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                      <span className="text-sm">{selectedEvent.rating} / 5.0</span>
-                    </div>
-                  )}
-                  
-                  {selectedEvent.priceRange && (
-                    <div className="flex items-center gap-2">
-                      <Wallet className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm">Price Range: {selectedEvent.priceRange}</span>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+      {/* Recommendations */}
+      <div className="space-y-4">
+        <div className="text-center py-8 text-gray-500">
+          <Coffee className="w-6 h-6 mx-auto mb-2 opacity-50" />
+          <p>Start chatting to get personalized recommendations</p>
+        </div>
+      </div>
+    </div>
   );
 };
 
