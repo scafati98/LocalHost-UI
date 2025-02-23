@@ -45,61 +45,27 @@ interface Recommendation {
 }
 
 interface TripSummaryProps {
-  messages: any[]; // Your chat message type
+  conversationId: string
 }
 
-const TripSummary = ({ messages }: TripSummaryProps) => {
-  const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
-  const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
-  const [email, setEmail] = useState('');
-  const [selectedEvent, setSelectedEvent] = useState<EventDetails | null>(null);
-  const [expandedWeeks, setExpandedWeeks] = useState<number[]>([1]); // First week expanded by default
-  const { toast } = useToast();
-  const [details, setDetails] = useState<TripDetail[]>([]);
-  const [expandedSections, setExpandedSections] = useState<string[]>(['destination']);
-  const [expandedCard, setExpandedCard] = useState<string | null>(null);
+const TripSummary = ({ conversationId }: TripSummaryProps) => {
 
-  const handleSendEmail = () => {
-    toast({
-      title: "Success!",
-      description: `Trip summary will be sent to ${email}`,
-    });
-    setIsEmailDialogOpen(false);
-    setEmail('');
-  };
+  console.log("conversation id", conversationId)
 
-  const handleEventClick = (event: EventDetails) => {
-    setSelectedEvent(event);
-    setIsEventDialogOpen(true);
-  };
+  const [data, setData] = useState<any | undefined>(undefined)
 
-  const toggleWeek = (weekNumber: number) => {
-    setExpandedWeeks(prev => 
-      prev.includes(weekNumber)
-        ? prev.filter(w => w !== weekNumber)
-        : [...prev, weekNumber]
-    );
-  };
-
-  const toggleSection = (section: string) => {
-    setExpandedSections(prev => 
-      prev.includes(section) 
-        ? prev.filter(s => s !== section)
-        : [...prev, section]
-    );
-  };
-
-  // Extract trip details from messages
-  useEffect(() => {
-    const extractedDetails: TripDetail[] = [];
-    
-    messages.forEach(message => {
-      // Add logic to extract details from messages
-      // This is where you'd parse the AI responses and categorize information
-    });
-
-    setDetails(extractedDetails);
-  }, [messages]);
+  // useEffect(() => {
+  //   const interval = setInterval(async () => {
+  //     const rawResponse = await fetch(`http://localhost:3000/conversation/${conversationId}`)
+  //     const response = await rawResponse.json()
+  //     console.log("got data realtime", response)
+  //     setData(response)
+  //   }, 3_000)
+  //
+  //   return () => {
+  //     clearInterval(interval)
+  //   }
+  // }, [])
 
   return (
     <div className="space-y-6">
@@ -120,7 +86,11 @@ const TripSummary = ({ messages }: TripSummaryProps) => {
       <div className="space-y-4">
         <div className="text-center py-8 text-gray-500">
           <Coffee className="w-6 h-6 mx-auto mb-2 opacity-50" />
-          <p>Start chatting to get personalized recommendations</p>
+          {data == null ? (
+              <p>Start chatting to get personalized recommendations</p>
+          ) : (
+              JSON.stringify(data)
+          )}
         </div>
       </div>
     </div>

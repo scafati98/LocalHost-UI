@@ -1,6 +1,5 @@
-import { MessageSquareDashed, RotateCw, MapPin } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { theme } from '@/styles/theme';
+import {MapPin, RotateCw} from 'lucide-react';
+import {AnimatePresence, motion} from 'framer-motion';
 
 interface ChatMessage {
   id: number;

@@ -1,19 +1,13 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import TripSummary from '../components/TripSummary';
 import LiveIndicator from '../components/LiveIndicator';
-import { motion } from 'framer-motion';
-import { X, Mic, MapPin } from 'lucide-react';
+import {motion} from 'framer-motion';
+import {MapPin, Mic, X} from 'lucide-react';
 
 const Conversation = () => {
   const navigate = useNavigate();
   const [isExiting, setIsExiting] = useState(false);
-
-  const handleHangUp = async () => {
-    setIsExiting(true);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    navigate('/');
-  };
 
   return (
     <motion.div 
@@ -74,7 +68,7 @@ const Conversation = () => {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.4, type: "spring" }}
           >
-            <TripSummary messages={[]} />
+            <TripSummary conversationId={""} />
           </motion.div>
         </motion.div>
       </div>
