@@ -1,4 +1,4 @@
-# Welcome to your LocalHost UI
+# Welcome to your LocalHost Guide UI
 
 ## Project info
 
